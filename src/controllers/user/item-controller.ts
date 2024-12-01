@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import fs from 'fs';
-import path from 'path';
 import { fileHandler } from '../../handlers/file-handler';
 import { ItemImageModel } from '../../models/item-image-model';
 import { ItemModel } from '../../models/item-model';
@@ -76,25 +74,12 @@ export class ItemController {
 
 			let imagePaths: string[] = [];
 			if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-				const existingImages = await ItemImageModel.getImagesByItemId(itemId);
-				if (existingImages.length > 0) {
-					for (const image of existingImages) {
-						const filePath = path.join(__dirname, '..', '..', '..', image.image_path);
-						console.log('Deleting file at:', filePath);
-						try {
-							await fs.promises.unlink(filePath); // Delete the file asynchronously
-							await ItemImageModel.deleteImagesByItemId(image.item_id); // Remove image data from the DB
-						} catch (err) {
-							console.error('Error deleting old image file:', err);
-						}
-					}
-				}
+				await ItemImageModel.deleteImagesByItemId(itemId);
 
-				// Save the new images
 				const savedImages = await fileHandler(req.files as Express.Multer.File[], updatedItem.id);
 				imagePaths = savedImages.map((file) => file.image);
 				for (const { image, item_id } of savedImages) {
-					await ItemImageModel.createItemImage(item_id, image); // Save new images to DB
+					await ItemImageModel.createItemImage(item_id, image);
 				}
 			}
 
@@ -109,7 +94,6 @@ export class ItemController {
 		}
 	}
 
-	// Get item by ID
 	static async getItemById(req: Request, res: Response): Promise<Response> {
 		const { id } = req.params;
 		const itemId = Number(id);
@@ -125,7 +109,7 @@ export class ItemController {
 
 			const images = await ItemImageModel.getImagesByItemId(item.id);
 			item.images = images;
-			return res.status(200).json(item); 
+			return res.status(200).json(item);
 		} catch (error) {
 			console.error(error);
 			return res.status(500).json({ message: 'Internal server error' });
@@ -139,7 +123,7 @@ export class ItemController {
 				const images = await ItemImageModel.getImagesByItemId(item.id);
 				item.images = images;
 			}
-			return res.status(200).json(items); 
+			return res.status(200).json(items);
 		} catch (error) {
 			console.error(error);
 			return res.status(500).json({ message: 'Internal server error' });
