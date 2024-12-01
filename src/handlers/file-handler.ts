@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-export const fileHandler = (files: Express.Multer.File[], ItemId: number): { image: string; item_id: number }[] => {
+export const fileHandler = (files: Express.Multer.File[], serviceId: number): { image: string; item_id: number }[] => {
 	const validExtensions = ['.jpg', '.jpeg', '.png'];
 
 	if (files.length > 3) {
@@ -27,6 +27,6 @@ export const fileHandler = (files: Express.Multer.File[], ItemId: number): { ima
 
 		fs.writeFileSync(fullPath, file.buffer);
 
-		return { image: imagePath, item_id: ItemId };
+		return { image: imagePath, item_id: serviceId };
 	});
 };
