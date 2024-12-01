@@ -23,7 +23,7 @@ app.use(
 
 app.use('/services/uploads/images', express.static(path.resolve(__dirname, '../services/uploads/images')));
 
-app.use('/v1/api', statusRoute);
+app.use('/api', statusRoute);
 
 app.use('/v1/admin/auth', authRoute);
 app.use('/v1/admin', adminRoute);
