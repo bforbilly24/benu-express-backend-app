@@ -23,13 +23,13 @@ app.use(
 
 app.use('/services/uploads/images', express.static(path.resolve(__dirname, '../services/uploads/images')));
 
-app.use('/api', statusRoute);
+app.use('/v1/api', statusRoute);
 
-app.use('/admin/auth', authRoute);
-app.use('/admin', adminRoute);
+app.use('/v1/admin/auth', authRoute);
+app.use('/v1/admin', adminRoute);
 
-app.use('/user', userRoute);
-app.use('/user/items', itemRoute);
+app.use('/v1/user', userRoute);
+app.use('/v1/user/items', itemRoute);
 
 app.use(errorHandler);
 
