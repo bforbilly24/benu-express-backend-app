@@ -19,18 +19,25 @@ export class ItemImageModel {
 		if (images.length > 0) {
 			for (const image of images) {
 				const filePath = path.join(__dirname, '..', '..', image.image_path);
-				console.log('Deleting file at:', filePath);
+				console.log('Attempting to delete file at:', filePath);
 
 				try {
-					await fs.promises.unlink(filePath);
+					if (fs.existsSync(filePath)) {
+						await fs.promises.unlink(filePath);
+						console.log('File deleted successfully:', filePath);
+					} else {
+						console.warn('File not found:', filePath);
+					}
 				} catch (err) {
 					console.error('Error deleting image file:', err);
 				}
 			}
 
-			return knexDb('item_image').where({ item_id: itemId }).del();
+			const deletedCount = await knexDb('item_image').where({ item_id: itemId }).del();
+			console.log(`Deleted ${deletedCount} image records from database`);
+			return deletedCount;
 		}
 
-		return 0;
+		return 0; 
 	}
 }
